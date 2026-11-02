@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>声匣 · 本地语音工作室</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar">
+    <a class="brand" href="/" aria-label="声匣首页"><span class="brand-mark"><i></i><i></i><i></i><i></i></span><span>声匣<small>VOICE STUDIO</small></span></a>
+    <div class="library-heading"><span>我的音色</span><span id="voiceCount" class="count">0</span></div>
+    <div id="voiceList" class="voice-list" aria-label="音色库"></div>
+    <button id="newVoiceButton" class="new-voice"><span>＋</span> 克隆一个新声音</button>
+    <div class="privacy-note"><span class="privacy-icon">◈</span><div>只在这台电脑上运行<small>不需要账号，也不需要积分</small></div></div>
+  </aside>
+
+  <main>
+    <header class="page-header"><div><div class="eyebrow">YOUR WORDS, YOUR VOICE</div><h1>把文字，变成你的声音<span>。</span></h1><p>选择喜欢的音色，或用一小段录音，留下独特的声音。</p></div><div id="engineBadge" class="engine-badge"><i></i><span>连接本地引擎中</span></div></header>
+    <div class="workspace-tabs" role="tablist" aria-label="工作模式">
+      <button id="ttsTab" role="tab" aria-selected="true" aria-controls="ttsPanel" class="tab active"><span>≋</span> 文字转语音</button>
+      <button id="cloneTab" role="tab" aria-selected="false" aria-controls="clonePanel" class="tab"><span>♧</span> 克隆新音色</button>
+    </div>
+
+    <div class="work-grid">
+      <section id="ttsPanel" class="card composer" role="tabpanel" aria-labelledby="ttsTab">
+        <div class="section-heading"><h2>想说些什么？</h2><span class="subtle">中文语音合成</span></div>
+        <label for="speechText" class="sr-only">要生成的文字</label>
+        <div id="editingBanner" class="editing-banner" hidden><span id="editingLabel"></span><button id="cancelWorkEdit" type="button" class="text-button">取消改写</button></div>
+        <textarea id="speechText" maxlength="2000" placeholder="在这里输入文字，让选中的声音替你说出来…"></textarea>
+        <div class="editor-footer"><span id="selectedVoiceTag" class="voice-tag">选择一个音色</span><span><b id="charCount">0</b> / 2000 字</span></div>
+        <div class="generation-options">
+          <label class="speed-control">语速 <input id="speed" type="range" min="0.7" max="1.3" value="1" step="0.05"><output id="speedValue">1.00×</output></label>
+          <label class="quality-control">生成模式 <select id="quality"><option value="16">快速 · 日常使用</option><option value="32">精细 · 更细腻</option></select></label>
+        </div>
+        <button id="generateButton" class="button primary wide" data-generate><span>✦</span> 生成语音</button>
+        <div class="preview-editor"><div class="preview-label"><label for="previewText">音色试听文字</label><span>左侧每个“试听”都读这一句</span></div><div class="preview-input-row"><input id="previewText" maxlength="300" type="text" placeholder="自定义试听时说的话"><button id="previewButton" class="button secondary" data-generate>试听</button></div><div id="previewSaved" class="field-note">修改后自动保存，可随时更换。</div></div>
+      </section>
+
+      <section id="clonePanel" class="card clone-form" role="tabpanel" aria-labelledby="cloneTab" hidden>
+        <div class="section-heading"><h2>留住一种声音</h2><span class="subtle">一段录音就够了</span></div>
+        <details class="video-extract"><summary>视频转音频 · 保存到桌面</summary><p class="field-note">选择视频，提取完整音轨为 MP3，直接保存到电脑桌面，不覆盖同名文件。</p><label class="field-label" for="videoFile">选择视频</label><input id="videoFile" type="file" accept="video/*,.mp4,.mov,.mkv,.avi,.webm,.m4v,.flv,.mpeg,.mpg,.ts"><button id="extractAudioButton" class="button secondary wide" disabled>提取音频到桌面</button><p id="extractStatus" class="field-note" role="status">支持常见视频格式，最大512MB。</p><button id="useExtractedButton" class="text-button" hidden>将提取的音频用于克隆</button></details>
+        <p class="field-note clone-length-tip">推荐3–10秒清晰人声；更长不一定更像，还可能拖慢生成。长录音可以只选其中最清楚的一段。</p>
+        <label class="field-label" for="voiceName">给音色取个名字</label><input id="voiceName" type="text" maxlength="40" placeholder="例如：我的声音、温柔旁白">
+        <label id="dropZone" class="drop-zone" for="referenceFile"><span class="upload-symbol">↥</span><strong id="fileName">点击选择，或把音频拖到这里</strong><small>WAV / MP3 / M4A / FLAC / OGG · 最大32MB</small><input id="referenceFile" type="file" accept="audio/*,.mp3,.wav,.m4a,.flac,.ogg,.webm" class="sr-only"></label>
+        <div id="referencePanel" class="reference-panel" hidden><audio id="referencePlayer" controls preload="metadata"></audio><div class="crop-row"><label>片段起点 <input id="clipStart" type="number" value="0" min="0" max="3600" step="0.1"> 秒</label><label>使用时长 <input id="clipSeconds" type="number" value="8" min="3" max="15" step="0.1"> 秒</label><button id="playClip" type="button" class="text-button">▶ 听片段</button></div><p class="field-note">建议选3–10秒清晰、单人说话的片段，避开音乐和长时间停顿。</p></div>
+        <div class="reference-text-heading"><label class="field-label" for="referenceText">片段里说了什么？</label><button id="transcribeButton" class="text-button">识别片段文字</button></div>
+        <textarea id="referenceText" maxlength="2000" placeholder="填写所选片段的原话，文字与录音越一致，效果越好。也可以留空，保存时会在本机自动识别。"></textarea>
+        <button id="saveCloneButton" class="button primary wide" data-generate><span>＋</span> 保存音色并试听</button>
+        <p class="clone-note">参考音频和克隆音色保存在本机，可重复用于后续文字合成。</p>
+      </section>
+
+      <aside class="output-column">
+        <section class="card output-card"><div class="section-heading"><h2>声音预览</h2><span id="resultBadge" class="tiny-badge">等待生成</span></div>
+          <div id="emptyResult" class="empty-result"><div class="sound-art"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><h3>第一段声音，从这里开始</h3><p>输入文字，点击生成。<br>声音会出现在这里，随时播放和下载。</p></div>
+          <div id="busyResult" class="busy-result" hidden><div class="sound-art moving"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><h3 id="busyTitle">正在生成声音…</h3><p id="busyDescription">文字越长，需要的时间越多，请稍等。</p></div>
+          <div id="generatedResult" class="generated-result" hidden><h3 id="resultTitle" class="result-title"></h3><div class="result-top"><span id="resultVoice"></span><span id="resultDuration"></span></div><p id="resultText" class="result-text"></p><audio id="resultPlayer" controls preload="metadata"></audio><div class="download-row"><a id="downloadWav" class="button primary" download>↓ 下载 WAV</a><a id="downloadMp3" class="button secondary" download>↓ 下载 MP3</a></div><div class="result-actions"><button id="saveResultButton" class="button primary small-button" data-manage>保存作品</button><button id="editResultButton" class="text-button" data-manage>编辑作品</button><button id="deleteResultButton" class="text-button danger-text" data-manage>删除作品</button></div><p class="field-note">未保存试听在替换或关闭时自动清理。需要保留请点“保存作品”或直接下载。</p></div>
+        </section>
+        <section class="tip-card"><span class="tip-number">小贴士 / 01</span><h3>声音相似，表达依然自由。</h3><p>克隆音色会参考录音中的声音特征。想换一段内容？直接改文字，再生成就好。</p><div class="tip-line"></div><span>本机合成 · 可反复使用</span></section>
+      </aside>
+    </div>
+    <section class="history-section"><div class="history-heading"><h2>我的作品</h2><div class="history-tools"><span id="historyCount">手动保存的作品会出现在这里</span><button id="trashButton" class="button secondary small-button" data-manage>系统回收站</button></div></div><div id="historyList" class="history-list"><div class="history-empty">还没有作品，先生成一段试试吧。</div></div></section>
+    <p class="field-note">未保存试听在替换或关闭页面时自动清理；异常退出的残留在下次启动时清理。已保存作品保留。</p>
+    <footer>声匣 · 本地语音工作室 <span>文字转语音 / 参考声音克隆</span></footer>
+  </main>
+</div>
+<div id="toast" class="toast" role="status" hidden></div>
+<dialog id="voiceEditDialog" class="editor-dialog" aria-labelledby="voiceEditTitle">
+  <form id="voiceEditForm">
+    <div class="dialog-heading"><h2 id="voiceEditTitle">编辑音色</h2><button type="button" class="dialog-close" data-close aria-label="关闭音色编辑">×</button></div>
+    <label class="field-label" for="editVoiceName">音色名称</label><input id="editVoiceName" type="text" maxlength="40" required>
+    <div id="editReferenceGroup"><span class="field-label">参考录音</span><audio id="editReferencePlayer" controls preload="metadata"></audio><label class="field-label" for="editVoiceReference">录音里的原话</label><textarea id="editVoiceReference" maxlength="2000"></textarea><p class="field-note">请让参考文字与录音一致，校正后会用于下一次合成。</p></div>
+    <p id="voiceDesignNote" class="field-note" hidden>这是设计音色，可以修改显示名称。</p>
+    <p class="dialog-error" role="alert"></p>
+    <div class="dialog-footer"><button id="deleteVoiceButton" type="button" class="button danger-outline">删除音色</button><button type="button" class="button secondary" data-close>取消</button><button type="submit" class="button primary">保存音色</button></div>
+  </form>
+</dialog>
+<dialog id="workEditDialog" class="editor-dialog" aria-labelledby="workEditTitle">
+  <form id="workEditForm">
+    <div class="dialog-heading"><h2 id="workEditTitle">编辑作品</h2><button type="button" class="dialog-close" data-close aria-label="关闭作品编辑">×</button></div>
+    <label class="field-label" for="editWorkTitle">作品名称</label><input id="editWorkTitle" type="text" maxlength="80" required>
+    <label class="field-label">原文</label><p id="editWorkText" class="work-original"></p>
+    <p class="field-note">保存名称会更新作品列表和下载文件名。点击“修改文字”，可载入原文重新合成，原作品会保留。</p>
+    <p class="dialog-error" role="alert"></p>
+    <div class="dialog-footer"><button id="rewriteWorkButton" type="button" class="button secondary">修改文字</button><button type="button" class="button secondary" data-close>取消</button><button type="submit" class="button primary">保存名称</button></div>
+  </form>
+</dialog>
+<dialog id="deleteDialog" class="editor-dialog compact-dialog" aria-labelledby="deleteTitle">
+  <div class="dialog-heading"><h2 id="deleteTitle">确认删除</h2><button type="button" class="dialog-close" data-close aria-label="关闭删除提示">×</button></div>
+  <p id="deleteMessage" class="delete-message"></p><p class="dialog-error" role="alert"></p>
+  <div class="dialog-footer"><button type="button" class="button secondary" data-close>取消</button><button id="confirmDeleteButton" type="button" class="button danger">移到系统回收站</button></div>
+</dialog>
+<dialog id="saveWorkDialog" class="editor-dialog compact-dialog" aria-labelledby="saveWorkTitle">
+  <form id="saveWorkForm"><div class="dialog-heading"><h2 id="saveWorkTitle">保存作品</h2><button type="button" class="dialog-close" data-close aria-label="关闭保存窗口">×</button></div>
+  <label class="field-label" for="newWorkTitle">作品名称</label><input id="newWorkTitle" type="text" maxlength="80" required><p class="dialog-error" role="alert"></p>
+  <div class="dialog-footer"><button type="button" class="button secondary" data-close>取消</button><button type="submit" class="button primary">确认保存</button></div></form>
+</dialog>
+<script src="/static/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+--extra-index-url https://download.pytorch.org/whl/cu130
+torch==2.11.0+cu130
+torchaudio==2.11.0+cu130
+omnivoice==0.2.1
+gradio==6.20.0
+gradio_client==2.5.0
+transformers==5.21.0

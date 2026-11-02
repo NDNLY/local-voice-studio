@@ -1,0 +1,23 @@
+{
+  "models": [
+    {
+      "repository": "k2-fsa/OmniVoice",
+      "revision": "c5fdb5ccb189668d56333f77ba2629f4cd7535f4",
+      "directory": "OmniVoice",
+      "allow_patterns": ["*.json", "*.jinja", "model.safetensors", "audio_tokenizer/*", "README.md", "LICENSE*"],
+      "sha256": {
+        "model.safetensors": "730839316de585f4c8298ec0e1712efc10fb19c6fa4e36eb741cb8d51ebcf6aa",
+        "audio_tokenizer/model.safetensors": "fe7c5e8785e0a05833e1bfc3e002ec7f55af21e306b2e7154a448c1f54ccfb0d"
+      }
+    },
+    {
+      "repository": "Systran/faster-whisper-small",
+      "revision": "536b0662742c02347bc0e980a01041f333bce120",
+      "directory": "faster-whisper-small",
+      "allow_patterns": ["config.json", "tokenizer.json", "vocabulary.txt", "model.bin", "README.md", "LICENSE*"],
+      "sha256": {
+        "model.bin": "3e305921506d8872816023e4c273e75d2419fb89b24da97b4fe7bce14170d671"
+      }
+    }
+  ]
+}

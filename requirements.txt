@@ -1,0 +1,9 @@
+fastapi==0.162.0
+uvicorn==0.54.0
+httpx==0.28.1
+gradio_client==2.5.0
+python-multipart==0.0.32
+imageio-ffmpeg==0.7.0
+faster-whisper==1.2.1
+send2trash==2.1.0
+websockets==15.0.1

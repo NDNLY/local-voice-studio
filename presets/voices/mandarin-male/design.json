@@ -1,0 +1,16 @@
+{
+  "label": "青年男声",
+  "lang": "Chinese",
+  "ns": 16,
+  "gs": 2.0,
+  "dn": true,
+  "sp": 1.0,
+  "pp": true,
+  "po": true,
+  "gender": "Male / 男",
+  "age": "Young Adult / 青年",
+  "pitch": "Moderate Pitch / 中音调",
+  "style": "Auto",
+  "accent": "Auto",
+  "dialect": "Auto"
+}
